@@ -34,7 +34,10 @@
         {
           nix = {
             channel.enable = false;
-            settings.experimental-features = "nix-command flakes";
+            settings = {
+              experimental-features = "nix-command flakes";
+              sandbox = true;
+            };
           };
           nixpkgs.overlays = [ self.overlays.default ];
           system.configurationRevision = self.rev or self.dirtyRev or null;
