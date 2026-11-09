@@ -1,16 +1,22 @@
 {
   mkPkgCollection,
 
-  curl,
-  fd,
-  git,
-  gnutar,
-  jq,
-  lua-language-server,
   neovim,
   ripgrep,
-  stylua,
+  fd,
+  git,
+  curl,
+  gnutar,
+  gcc,
   tree-sitter,
+
+  # formatters
+  jq,
+  stylua,
+  nixfmt,
+
+  # language servers
+  lua-language-server,
 }@args:
 
 mkPkgCollection "nvim-with-deps" args
