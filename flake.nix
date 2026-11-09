@@ -9,6 +9,10 @@
       url = "github:nix-darwin/nix-darwin/nix-darwin-26.05";
       inputs.nixpkgs.follows = "nixpkgs-darwin";
     };
+    index-db = {
+      url = "github:/nix-community/nix-index-database";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
   };
 
   outputs =
@@ -18,6 +22,7 @@
       nixpkgs-nixos,
       nixpkgs-darwin,
       darwin,
+      index-db,
     }:
     let
       lib = nixpkgs-unstable.lib;
@@ -43,19 +48,15 @@
           system.configurationRevision = self.rev or self.dirtyRev or null;
         };
 
-      mkDarwin =
-        module:
-        darwin.lib.darwinSystem {
-          modules = [
-            defaults
-            module
-          ];
-        };
+      mkDarwin = modules: darwin.lib.darwinSystem { inherit modules; };
     in
     {
-      darwinConfigurations = {
-        franky = mkDarwin ./franky.nix;
-      };
+      darwinConfigurations.franky = mkDarwin [
+        defaults
+        index-db.darwinModules.nix-index
+        { programs.nix-index-database.comma.enable = true; }
+        ./franky.nix
+      ];
 
       overlays.default =
         final: _:
