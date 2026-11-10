@@ -10,7 +10,11 @@
       inputs.nixpkgs.follows = "nixpkgs-darwin";
     };
     index-db = {
-      url = "github:/nix-community/nix-index-database";
+      url = "github:nix-community/nix-index-database";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+    neovim-nightly = {
+      url = "github:nix-community/neovim-nightly-overlay";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
   };
@@ -23,6 +27,7 @@
       nixpkgs-darwin,
       darwin,
       index-db,
+      neovim-nightly,
     }:
     let
       lib = nixpkgs-unstable.lib;
@@ -42,6 +47,12 @@
             settings = {
               experimental-features = "nix-command flakes";
               sandbox = true;
+              substituters = [
+                "https://nix-community.cachix.org"
+              ];
+              trusted-public-keys = [
+                "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+              ];
             };
           };
           nixpkgs.overlays = [ self.overlays.default ];
@@ -69,7 +80,7 @@
         };
 
       packages = perSystem (
-        system: import ./packages { pkgs = nixpkgs-unstable.legacyPackages.${system}; }
+        system: import ./packages { pkgs = nixpkgs-unstable.legacyPackages.${system}.extend neovim-nightly.overlays.default; }
       );
     };
 }
